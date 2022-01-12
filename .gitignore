@@ -1,2 +1,5 @@
 *.workspace
 codelite/
+*.session
+*.tags
+*ctags
