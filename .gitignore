@@ -5,3 +5,7 @@ codelite/
 *ctags
 *Makefile
 *tags
+*.exe
+*.mk
+*.c.o
+*.c.o.d
