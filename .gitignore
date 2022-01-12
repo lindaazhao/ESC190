@@ -3,3 +3,5 @@ codelite/
 *.session
 *.tags
 *ctags
+*Makefile
+*tags
