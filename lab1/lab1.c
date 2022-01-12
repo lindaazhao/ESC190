@@ -8,7 +8,7 @@ double split_bill(double base_amount, double tax_rate, double tip_rate, int num_
         split_amount += 0.01;
     }
     
-    // i eat ass
+    // hi james!
     
     return split_amount;
 }
