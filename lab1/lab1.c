@@ -36,12 +36,20 @@ double split_bill(double base_amount, double tax_rate, double tip_rate, int num_
      char *test_j;
      char *test_k;
      char *test_l;
+     char *test_j_cap;
+     char *test_k_cap;
+     char *test_l_cap;
      char *test_fish;
+     char *test_fish_cap;
      
      test_j = strstr(menu_item, "j");
      test_k = strstr(menu_item, "k");
      test_l = strstr(menu_item, "l");
+     test_j_cap = strstr(menu_item, "J");
+     test_k_cap = strstr(menu_item, "K");
+     test_l_cap = strstr(menu_item, "L");
      test_fish = strstr(menu_item, "fish");
+     test_fish_cap = strstr(menu_item, "Fish");
      
      int counter = 0;
      for(int i = 0; i < strlen(menu_item); i++) {
@@ -49,7 +57,7 @@ double split_bill(double base_amount, double tax_rate, double tip_rate, int num_
              counter++;
      }
      
-     if(test_j || test_k || test_l || test_fish) {
+     if(test_j || test_k || test_l || test_j_cap || test_k_cap || test_l_cap || test_fish || test_fish_cap) {
          return 0;
      }
      else if (counter % 2 == 1) {

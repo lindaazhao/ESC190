@@ -33,7 +33,7 @@ int main () {
         printf("Sandy would eat '%s'.\n", test_food);
     }
     
-    char test_food2[] = "james";
+    char test_food2[] = "James";
     int test_p6 = sandy_eats(test_food2);
     if (test_p6 == 0) {
         printf("Sandy would NOT eat '%s'.\n", test_food2);
@@ -42,7 +42,7 @@ int main () {
         printf("Sandy would eat '%s'.\n", test_food2);
     }
     
-    char test_food3[] = "fish pizzaz";
+    char test_food3[] = "Fish pizzaz";
     int test_p7 = sandy_eats(test_food3);
     if (test_p7 == 0) {
         printf("Sandy would NOT eat '%s'.\n", test_food3);
