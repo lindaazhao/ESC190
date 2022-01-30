@@ -9,3 +9,7 @@ codelite/
 *.mk
 *.c.o
 *.c.o.d
+lab1/Debug/lab1.exe
+lab1/lab1.mk
+lab1/lab1.project
+setup_test/setup_test.project
