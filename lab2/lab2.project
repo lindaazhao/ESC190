@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="lab1" Version="11000" InternalType="">
-  <VirtualDirectory Name="lab1">
-    <File Name="test1.c"/>
-    <File Name="lab1.h"/>
-    <File Name="lab1.c"/>
+<CodeLite_Project Name="lab2" Version="11000" InternalType="">
+  <VirtualDirectory Name="lab2">
+    <File Name="test.c"/>
+    <File Name="lab2_task7.c"/>
+    <File Name="lab2_task6.c"/>
+    <File Name="lab2_task5.c"/>
+    <File Name="lab2_task4.c"/>
+    <File Name="lab2_task3.c"/>
+    <File Name="lab2_task2.c"/>
+    <File Name="lab2_task1.c"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
@@ -26,7 +31,7 @@
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="$(ConfigurationName)" Command="$(OutputFile)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="$(ConfigurationName)" Command="$(OutputFile)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Workspace Settings&gt;" DbgSetName="&lt;Use Global Settings&gt;">
         <![CDATA[]]>

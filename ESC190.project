@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="lab1" Version="11000" InternalType="">
+<CodeLite_Project Name="ESC190" Version="11000" InternalType="">
+  <VirtualDirectory Name="lab3">
+    <File Name="lab3/test3.c"/>
+    <File Name="lab3/lab3.h"/>
+    <File Name="lab3/lab3.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="lab2">
+    <File Name="lab2/test.c"/>
+    <File Name="lab2/lab2_task7.c"/>
+    <File Name="lab2/lab2_task6.c"/>
+    <File Name="lab2/lab2_task5.c"/>
+    <File Name="lab2/lab2_task4.c"/>
+    <File Name="lab2/lab2_task3.c"/>
+    <File Name="lab2/lab2_task2.c"/>
+    <File Name="lab2/lab2_task1.c"/>
+    <File Name="lab2_task1.c"/>
+  </VirtualDirectory>
   <VirtualDirectory Name="lab1">
-    <File Name="test1.c"/>
-    <File Name="lab1.h"/>
-    <File Name="lab1.c"/>
+    <File Name="lab1/test1.c"/>
+    <File Name="lab1/lab1.h"/>
+    <File Name="lab1/lab1.c"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

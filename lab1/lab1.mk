@@ -5,18 +5,18 @@
 ## Debug
 ProjectName            :=lab1
 ConfigurationName      :=Debug
-WorkspacePath          :=C:/Users/Linda/Documents/ESC190
-ProjectPath            :=C:/Users/Linda/Documents/ESC190/lab1
+WorkspacePath          :=C:/Users/james/Documents/GitHub/ESC190/lab1
+ProjectPath            :=C:/Users/james/Documents/GitHub/ESC190/lab1
 IntermediateDirectory  :=$(ConfigurationName)
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
-User                   :=Linda
-Date                   :=12/01/2022
+User                   :=james
+Date                   :=26/01/2022
 CodeLitePath           :="C:/Program Files/CodeLite"
-LinkerName             :="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/g++.exe"
-SharedObjectLinkerName :="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/g++.exe" -shared -fPIC
+LinkerName             :="C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/g++.exe"
+SharedObjectLinkerName :="C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/g++.exe" -shared -fPIC
 ObjectSuffix           :=.o
 DependSuffix           :=.o.d
 PreprocessSuffix       :=.i
@@ -36,26 +36,26 @@ ObjectsFileList        :="lab1.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=makedir
 RcCmpOptions           := 
-RcCompilerName         :="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/windres.exe"
-LinkOptions            :=  -lm
+RcCompilerName         :="C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/windres.exe"
+LinkOptions            :=  -O0
 IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). 
 IncludePCH             := 
 RcIncludePath          := 
 Libs                   := 
 ArLibs                 :=  
-LibPath                := $(LibraryPathSwitch). 
+LibPath                := $(LibraryPathSwitch). $(LibraryPathSwitch). $(LibraryPathSwitch)Debug 
 
 ##
 ## Common variables
 ## AR, CXX, CC, AS, CXXFLAGS and CFLAGS can be overriden using an environment variables
 ##
-AR       := "C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/ar.exe" rcu
-CXX      := "C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/g++.exe"
-CC       := "C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/gcc.exe"
-CXXFLAGS :=  -g -O0 -Wall $(Preprocessors)
-CFLAGS   :=  -g -O0 -Wall $(Preprocessors)
+AR       := "C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/ar.exe" rcu
+CXX      := "C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/g++.exe"
+CC       := "C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/gcc.exe"
+CXXFLAGS :=  -g -Wall $(Preprocessors)
+CFLAGS   :=   $(Preprocessors)
 ASFLAGS  := 
-AS       := "C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/as.exe"
+AS       := "C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/as.exe"
 
 
 ##
@@ -95,13 +95,13 @@ PreBuild:
 ##
 $(IntermediateDirectory)/lab1.c$(ObjectSuffix): lab1.c
 	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/lab1.c$(ObjectSuffix) -MF$(IntermediateDirectory)/lab1.c$(DependSuffix) -MM lab1.c
-	$(CC) $(SourceSwitch) "C:/Users/Linda/Documents/ESC190/lab1/lab1.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/lab1.c$(ObjectSuffix) $(IncludePath)
+	$(CC) $(SourceSwitch) "C:/Users/james/Documents/GitHub/ESC190/lab1/lab1.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/lab1.c$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/lab1.c$(PreprocessSuffix): lab1.c
 	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/lab1.c$(PreprocessSuffix) lab1.c
 
 $(IntermediateDirectory)/test1.c$(ObjectSuffix): test1.c
 	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/test1.c$(ObjectSuffix) -MF$(IntermediateDirectory)/test1.c$(DependSuffix) -MM test1.c
-	$(CC) $(SourceSwitch) "C:/Users/Linda/Documents/ESC190/lab1/test1.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/test1.c$(ObjectSuffix) $(IncludePath)
+	$(CC) $(SourceSwitch) "C:/Users/james/Documents/GitHub/ESC190/lab1/test1.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/test1.c$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/test1.c$(PreprocessSuffix): test1.c
 	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/test1.c$(PreprocessSuffix) test1.c
 

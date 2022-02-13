@@ -1,0 +1,1 @@
+Debug/lab2_task1.c.o Debug/lab2_task7.c.o Debug/lab2_task2.c.o Debug/lab2_task5.c.o Debug/test.c.o Debug/lab2_task3.c.o Debug/lab2_task6.c.o Debug/lab2_task4.c.o   
