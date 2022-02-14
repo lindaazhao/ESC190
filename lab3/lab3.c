@@ -36,13 +36,10 @@ int add_request(struct party_node **head, char *item, double price, char *ta){
 //Remove the last item added
 void remove_request(struct party_node **head){
     
-    struct party_node *temp = *head, *prev;
-    
-    if (temp == NULL){
-        return;
-    }
-    prev->next = temp->next;
+    struct party_node *temp = *head;
+    *head = (*head)->next;
     free(temp);
+
 }
 //Sort party item requests - in place?
 void make_sorted(struct party_node **head){
