@@ -1,18 +1,13 @@
 #include "lab3.h"
 #include <stdio.h>
-#include <string.h>
 
-//Add TA party item request to the list
+// Add TA party item request to the list
 int add_request(struct party_node **head, char *item, double price, char *ta){
-    //to check if item is "IDE"
-    char IDE[3];
-    IDE[0] = 'I';
-    IDE[1] = 'D';
-    IDE[2] = 'E';
-    
-    item[3];
+    // Check if item is "IDE"
+    char* IDE = "IDE";
+
     int count = 0;
-    for (int i = 0; i<3; i++){
+    for (int i = 0; i<4; i++){
         if (item[i] == IDE[i]){
             count++;
            }
@@ -20,9 +15,10 @@ int add_request(struct party_node **head, char *item, double price, char *ta){
             continue;
         }
     }
-    if (count == 3){
-        return 1;
-        }
+    if (count == 4){
+        return -1;
+    }
+    // Create new node otherwise
     else{
         struct party_node* new_head = (struct party_node*)malloc(sizeof(struct party_node));
             new_head->next = *head; 
@@ -33,7 +29,9 @@ int add_request(struct party_node **head, char *item, double price, char *ta){
         return 0;
     }
 }
-//Remove the last item added
+
+
+// Remove the last item added
 void remove_request(struct party_node **head){
     
     struct party_node *temp = *head;
@@ -41,49 +39,73 @@ void remove_request(struct party_node **head){
     free(temp);
 }
 
-//Sort party item requests - in place?
+
+// Sort party item requests - in place?
 void make_sorted(struct party_node **head){
-    
-    struct party_node *temp = *head;
-    struct party_node *swap = temp;
-    
-    double tempPrice; //temp variable to store price data
-    char* tempTA; //temp variable to store TA data
-    char* tempItem; //temp variable to store item data
-    
-    //temp = node;//temp node to hold node data and next link
-    while(*head != NULL)
-    {
-    swap = temp; 
-        while ((temp->next) != NULL)//travel till the second last element 
-        {
-           if((swap->price) < (swap->next->price))// compare the data of the nodes 
-            {
-              tempPrice = swap->price;
-              swap->price = swap->next->price;// swap the prices
-              swap->next->price = tempPrice;
-              
-              tempTA = swap->ta;
-              swap->ta = swap->next->ta;// swap the TAs
-              swap->next->ta = tempTA;
-              
-              tempItem = swap->item;
-              swap->item = swap->next->item;// swap the items
-              swap->next->item = tempItem;
+    struct party_node previous; // Local "previous" node
+    struct party_node* temp_node; // Temporary node to move along linked list
+    int list_length = length_of_list(head);
+
+    // Each loop moves the smallest element to the end of the list
+    for (int i=0; i<list_length; i++){
+        previous.next = *head; // Previous doesn't change; start sort here
+        temp_node = &previous; // Start temp_node at the node (previous) before the actual linked list
+
+        // Compares and swaps prices for first to last item
+        while (temp_node->next != NULL && temp_node->next->next != NULL){
+            if (temp_node->next->price < temp_node->next->next->price){
+                
+                struct party_node* swap = temp_node->next; // Store second node
+                temp_node->next = swap->next; // Set first node to point to third; third is now second
+                swap->next = temp_node->next->next; // Set original second node to point to fourth node
+                temp_node->next->next = swap; // Set new second node (original third) to point to old second (now third)
             }
-        temp = temp->next;    // move to the next element 
+            temp_node = temp_node->next; // Iterate to next node
         }
-    *head = (*head)->next;    // move to the next node
+
+        *head = previous.next; // Make head point to the top of the stack again
     }
 }
+
+
+// Determine the length of a linked list
+int length_of_list(struct party_node **head){
+    int counter = 0;
+    struct party_node* temp_node = *head;
+    while (temp_node != NULL) {
+        counter++;
+        temp_node = temp_node->next;
+    }
+    return counter;
+}
     
 
-//Trim list to fit the budget
+// Trim list to fit the budget
 double finalize_list(struct party_node **head, double budget){
-    //Add code here
+    double remaining_budget = budget;
+    
+    struct party_node previous; // Local "previous" node
+    struct party_node* temp_node;
+    previous.next = *head; // Previous doesn't change; start iterating here
+    temp_node = &previous;
+
+    while (temp_node->next != NULL){
+        if (remaining_budget - temp_node->next->price > 0){
+            remaining_budget -= temp_node->next->price;
+            temp_node = temp_node->next; // Iterate to consider next node            
+        }
+        else{
+            struct party_node *delete = temp_node->next;
+            temp_node->next = delete->next; // Automatically iterates to next node
+            free(delete);
+        }
+    }
+    *head = previous.next;
+    return remaining_budget;
 }
 
-//Print the current list - hope this is helpful!
+
+// Print the current list - hope this is helpful!
 void print_list(struct party_node *head){
     int count = 1;
     printf("The current list contains:\n");
