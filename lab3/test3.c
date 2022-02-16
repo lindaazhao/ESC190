@@ -36,7 +36,7 @@ int main(){
 
     
     //Sort by price
-    printf("Sorting by price:");
+    printf("Sorting by price:\n");
     make_sorted(&head);
     print_list(head);
     

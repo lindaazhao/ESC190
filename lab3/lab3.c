@@ -39,12 +39,44 @@ void remove_request(struct party_node **head){
     struct party_node *temp = *head;
     *head = (*head)->next;
     free(temp);
-
 }
+
 //Sort party item requests - in place?
 void make_sorted(struct party_node **head){
-   
+    
+    struct party_node *temp = *head;
+    struct party_node *swap = temp;
+    
+    double tempPrice; //temp variable to store price data
+    char* tempTA; //temp variable to store TA data
+    char* tempItem; //temp variable to store item data
+    
+    //temp = node;//temp node to hold node data and next link
+    while(*head != NULL)
+    {
+    swap = temp; 
+        while ((temp->next) != NULL)//travel till the second last element 
+        {
+           if((swap->price) < (swap->next->price))// compare the data of the nodes 
+            {
+              tempPrice = swap->price;
+              swap->price = swap->next->price;// swap the prices
+              swap->next->price = tempPrice;
+              
+              tempTA = swap->ta;
+              swap->ta = swap->next->ta;// swap the TAs
+              swap->next->ta = tempTA;
+              
+              tempItem = swap->item;
+              swap->item = swap->next->item;// swap the items
+              swap->next->item = tempItem;
+            }
+        temp = temp->next;    // move to the next element 
+        }
+    *head = (*head)->next;    // move to the next node
+    }
 }
+    
 
 //Trim list to fit the budget
 double finalize_list(struct party_node **head, double budget){
