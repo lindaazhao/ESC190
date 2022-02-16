@@ -95,9 +95,9 @@ double finalize_list(struct party_node **head, double budget){
             temp_node = temp_node->next; // Iterate to consider next node            
         }
         else{
-            struct party_node *delete = temp_node->next;
-            temp_node->next = delete->next; // Automatically iterates to next node
-            free(delete);
+            struct party_node *delete_node = temp_node->next;
+            temp_node->next = delete_node->next; // Automatically iterates to next node
+            free(delete_node);
         }
     }
     *head = previous.next;
