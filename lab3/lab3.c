@@ -94,7 +94,7 @@ double finalize_list(struct party_node **head, double budget){
     temp_node = &previous;
 
     while (temp_node->next != NULL){
-        if (remaining_budget - temp_node->next->price > 0){
+        if (remaining_budget - temp_node->next->price >= 0){
             remaining_budget -= temp_node->next->price;
             temp_node = temp_node->next; // Iterate to consider next node            
         }
