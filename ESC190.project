@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="ESC190" Version="11000" InternalType="">
+  <VirtualDirectory Name="assignment1">
+    <File Name="../assignment1/restaurant_tests.c"/>
+    <File Name="../assignment1/order_tests.c"/>
+    <File Name="../assignment1/a1_starter_tests.h"/>
+    <File Name="../assignment1/menu_tests.c"/>
+    <File Name="../assignment1/restaurant.c"/>
+    <File Name="../assignment1/a1.h"/>
+    <File Name="../assignment1/a1.c"/>
+  </VirtualDirectory>
   <VirtualDirectory Name="lab3">
     <File Name="lab3/test3.c"/>
     <File Name="lab3/lab3.h"/>
