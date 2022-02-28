@@ -6,36 +6,53 @@
 
 Menu* load_menu(char* fname){
 	
+	// Create new menu struct
 	struct Menu* menu = (struct Menu*)malloc(sizeof(struct Menu));
-	
+	menu->num_items = 0;
+	// Initialize arrays for menu items
+	menu->item_codes = (char**)malloc(sizeof(char*)); // Allocate size of one pointer (to a string)
+	menu->item_names = (char**)malloc(sizeof(char*)); // Allocate size of one pointer (to a string)
+	menu->item_cost_per_unit = (double*)malloc(sizeof(double));
+
+	// Initialize getline parameters
 	FILE* menu_file;
-	char* line = NULL;
+	char* line = NULL;	
 	size_t len = 0;
 	ssize_t read;
 
 	menu_file = fopen(fname, "r");
-
+	
+	// Get each line from the menu file, one by one
 	while ((read = getline(&line, &len, menu_file)) != -1){
-		char item_code[ITEM_CODE_LENGTH];
-		char item_name[MAX_ITEM_NAME_LENGTH];
-		char item_price_str;
-		double item_price;
+		// Split line into item code, item name, and item price
+		char* item_code_token = strtok(line, MENU_DELIM);
+		char* item_name_token = strtok(NULL, MENU_DELIM);
+		char* item_price_token = strtok(NULL, "\n");
 
-		strcpy(item_code, strok(line, MENU_DELIM));
-		strcpy(item_name, strtok(NULL, MENU_DELIM));
-		strcpy(item_price_str, strtok(NULL, "\n"));
-		item_price = strtod(item_price_str, NULL);
+		char* item_code = (char*)malloc(sizeof(char) * strlen(item_code_token));
+		strcpy(item_code, item_code_token);
+		
+		char* item_name = (char*)malloc(sizeof(char) * strlen(item_name_token));
+		strcpy(item_name, item_name_token);
+
+		double item_price = strtod(item_price_token + 1, NULL); // strtod converts string to double value
+
+		if (menu->num_items == 0) {
+			menu->item_codes[menu->num_items] = item_code;
+			menu->item_names[menu->num_items] = item_name;
+			menu->item_cost_per_unit[menu->num_items] = item_price;
+			menu->num_items++;
+		}
+		else {
+			menu->item_codes = (char*)realloc(menu->item_codes, (menu->num_items + 1) * sizeof(char*));
+			menu->item_names = (char*)realloc(menu->item_names, (menu->num_items + 1) * sizeof(char*));
+			menu->item_cost_per_unit = (double*)realloc(menu->item_cost_per_unit, (menu->num_items+1) * sizeof(double));
+		}
+		
 	}
 	
 	fclose(menu_file);
 	free(line);
-
-	
-
-
-
-
-	
 }
 
 Restaurant* initialize_restaurant(char* name){
@@ -80,6 +97,52 @@ Order* build_order(char* items, char* quantities){
 	new_order->num_items = num_items;
 }
 
+
+
+void enqueue_order(Order* order, Restaurant* restaurant){
+
+}
+Order* dequeue_order(Restaurant* restaurant){
+
+}
+
+/*
+	Getting information about our orders and order status
+*/
+double get_item_cost(char* item_code, Menu* menu){
+
+}
+
+double get_order_subtotal(Order* order, Menu* menu){
+
+}
+
+double get_order_total(Order* order, Menu* menu){
+
+}
+
+int get_num_completed_orders(Restaurant* restaurant){
+
+}
+
+int get_num_pending_orders(Restaurant* restaurant){
+
+}
+
+/*
+	Closing down and deallocating memory
+*/
+void clear_order(Order** order){
+
+}
+void clear_menu(Menu** menu){
+
+}
+void close_restaurant(Restaurant** restaurant){
+
+}
+
+
 // Helper functions
 // ================================================================================================
 
@@ -108,23 +171,23 @@ void print_order(Order* order){
 }
 
 
-void print_receipt(Order* order, Menu* menu){
-	for (int i = 0; i < order->num_items; i++){
-		double item_cost = get_item_cost(order->item_codes[i], menu);
-		fprintf(
-			stdout, 
-			"%d x (%s)\n @$%.2f ea \t %.2f\n", 
-			order->item_quantities[i],
-			order->item_codes[i], 
-			item_cost,
-			item_cost * order->item_quantities[i]
-		);
-	}
-	double order_subtotal = get_order_subtotal(order, menu);
-	double order_total = get_order_total(order, menu);
+// void print_receipt(Order* order, Menu* menu){
+// 	for (int i = 0; i < order->num_items; i++){
+// 		double item_cost = get_item_cost(order->item_codes[i], menu);
+// 		fprintf(
+// 			stdout, 
+// 			"%d x (%s)\n @$%.2f ea \t %.2f\n", 
+// 			order->item_quantities[i],
+// 			order->item_codes[i], 
+// 			item_cost,
+// 			item_cost * order->item_quantities[i]
+// 		);
+// 	}
+// 	double order_subtotal = get_order_subtotal(order, menu);
+// 	double order_total = get_order_total(order, menu);
 	
-	fprintf(stdout, "Subtotal: \t %.2f\n", order_subtotal);
-	fprintf(stdout, "               -------\n");
-	fprintf(stdout, "Tax %d%%: \t$%.2f\n", TAX_RATE, order_total);
-	fprintf(stdout, "              ========\n");
-}
+// 	fprintf(stdout, "Subtotal: \t %.2f\n", order_subtotal);
+// 	fprintf(stdout, "               -------\n");
+// 	fprintf(stdout, "Tax %d%%: \t$%.2f\n", TAX_RATE, order_total);
+// 	fprintf(stdout, "              ========\n");
+// }
