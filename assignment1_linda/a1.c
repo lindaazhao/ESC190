@@ -9,6 +9,7 @@ Menu* load_menu(char* fname){
 	// Create new menu struct
 	struct Menu* menu = (struct Menu*)malloc(sizeof(struct Menu));
 	menu->num_items = 0;
+	// fprintf(stdout, "menu->num_items: %d\n", menu->num_items);
 	// Initialize arrays for menu items
 	menu->item_codes = (char**)malloc(sizeof(char*)); // Allocate size of one pointer (to a string)
 	menu->item_names = (char**)malloc(sizeof(char*)); // Allocate size of one pointer (to a string)
@@ -23,37 +24,58 @@ Menu* load_menu(char* fname){
 	menu_file = fopen(fname, "r");
 	
 	// Get each line from the menu file, one by one
-	while ((read = getline(&line, &len, menu_file)) != -1){
+	while ((read = getline(&line, &len, menu_file)) != -1){		
 		// Split line into item code, item name, and item price
-		char* item_code_token = strtok(line, MENU_DELIM);
-		char* item_name_token = strtok(NULL, MENU_DELIM);
-		char* item_price_token = strtok(NULL, "\n");
-
-		char* item_code = (char*)malloc(sizeof(char) * strlen(item_code_token));
-		strcpy(item_code, item_code_token);
+		char* token = strtok(line, MENU_DELIM);
+		char* item_code = strdup(token); // Remember to free these, since they are allocated using malloc
+		// fprintf(stdout, "Item Code Token: %s\n", item_code);
 		
-		char* item_name = (char*)malloc(sizeof(char) * strlen(item_name_token));
-		strcpy(item_name, item_name_token);
-
-		double item_price = strtod(item_price_token + 1, NULL); // strtod converts string to double value
-
-		if (menu->num_items == 0) {
-			menu->item_codes[menu->num_items] = item_code;
-			menu->item_names[menu->num_items] = item_name;
-			menu->item_cost_per_unit[menu->num_items] = item_price;
-			menu->num_items++;
-		}
-		else {
-			menu->item_codes = (char**)realloc(menu->item_codes, (menu->num_items + 1) * sizeof(char*));
-			menu->item_names = (char**)realloc(menu->item_names, (menu->num_items + 1) * sizeof(char*));
-			menu->item_cost_per_unit = (double*)realloc(menu->item_cost_per_unit, (menu->num_items+1) * sizeof(double));
-		}
+		token = strtok(NULL, MENU_DELIM);
+		char* item_name = strdup(token); // Remember to free these, since they are allocated using malloc
+		// fprintf(stdout, "Item Name Token: %s\n", item_name);
 		
+		token = strtok(NULL, "\n");
+		char* item_price_str = strdup(token); // Remember to free these, since they are allocated using malloc
+		// fprintf(stdout, "Item Price Token: %s\n", item_price_str);
+
+		// fprintf(stdout, "Item Code: %s\n", item_code);
+		// fprintf(stdout, "Item Name: %s\n", item_name);
+		// fprintf(stdout, "Item Price Token+1: %s\n", item_price_str+1);
+
+		double item_price;
+		item_price = strtod(item_price_str+1, NULL); // strtod converts string to double value
+
+		// print_menu(menu);
+
+		menu->num_items++;
+
+		if (menu->num_items == 1) {
+			menu->item_codes[menu->num_items-1] = item_code;
+			menu->item_names[menu->num_items-1] = item_name;
+			menu->item_cost_per_unit[menu->num_items-1] = item_price;
+			// print_menu(menu);
+		}
+		else {			
+			// Make space for the new item by reallocating memory
+			menu->item_codes = (char**)realloc(menu->item_codes, (menu->num_items) * sizeof(char*));
+			menu->item_names = (char**)realloc(menu->item_names, (menu->num_items) * sizeof(char*));
+			menu->item_cost_per_unit = (double*)realloc(menu->item_cost_per_unit, (menu->num_items) * sizeof(double));
+			
+			// Add the item to the menu
+			menu->item_codes[menu->num_items-1] = item_code;
+			menu->item_names[menu->num_items-1] = item_name;
+			menu->item_cost_per_unit[menu->num_items-1] = item_price;
+			// print_menu(menu);
+		}	
+		free(item_price_str);	
 	}
 	
-	fclose(menu_file);
 	free(line);
+	fclose(menu_file);
+	
+	return menu;
 }
+
 
 Restaurant* initialize_restaurant(char* name){
 	struct Restaurant* restaurant = (struct Restaurant*)malloc(sizeof(struct Restaurant));
@@ -137,7 +159,17 @@ void clear_order(Order** order){
 }
 void clear_menu(Menu** menu){
 
+	for (int i = 0; i < (*menu)->num_items; i++){
+		free((*menu)->item_codes[i]);
+		free((*menu)->item_names[i]);
+	}
+	free((*menu)->item_codes);
+	free((*menu)->item_names);
+	free((*menu)->item_cost_per_unit);
+	free(*menu);
+
 }
+
 void close_restaurant(Restaurant** restaurant){
 
 }
