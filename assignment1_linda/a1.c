@@ -44,8 +44,8 @@ Menu* load_menu(char* fname){
 			menu->num_items++;
 		}
 		else {
-			menu->item_codes = (char*)realloc(menu->item_codes, (menu->num_items + 1) * sizeof(char*));
-			menu->item_names = (char*)realloc(menu->item_names, (menu->num_items + 1) * sizeof(char*));
+			menu->item_codes = (char**)realloc(menu->item_codes, (menu->num_items + 1) * sizeof(char*));
+			menu->item_names = (char**)realloc(menu->item_names, (menu->num_items + 1) * sizeof(char*));
 			menu->item_cost_per_unit = (double*)realloc(menu->item_cost_per_unit, (menu->num_items+1) * sizeof(double));
 		}
 		
