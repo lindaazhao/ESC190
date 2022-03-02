@@ -79,28 +79,51 @@ Restaurant* initialize_restaurant(char* name){
 }
 
 Order* build_order(char* items, char* quantities){
-	
-	// Number of items in the order
-	int num_items = strlen(items) / (ITEM_CODE_LENGTH-1);
-	
-	// Array for item codes
-	// char** item_codes = ...
 
-	// Array for item quantities =========================================================
-	int item_quantities[num_items]; // Static array containing item quantities
-	int counter = 0; // Used to index through item_quantities
+	char* order_items = strdup(items); // Convert string literal to byte string w/allocated memory
+	char* order_quantities = strdup(quantities);
 
-	// Separate quantities by MENU_DELIM and add them one-by-one to item_quantities array
-	char* item_quantity = strtok(quantities, MENU_DELIM);
-	while (item_quantity != NULL){
-		item_quantities[counter] = atoi(item_quantity); // atoi converts ASCII to int
-		counter++;
-		item_quantity = strtok(NULL, MENU_DELIM);
-	}
-	
 	// Create new_order, pointer to an Order struct
 	struct Order* new_order = (struct Order*)malloc(sizeof(struct Order));
-	new_order->num_items = num_items;
+	new_order->num_items = strlen(items) / (ITEM_CODE_LENGTH-1);
+	new_order->item_codes = (char**)malloc(sizeof(char*) * (new_order->num_items));
+	new_order->item_quantities = (int*)malloc(sizeof(int) * (new_order->num_items));
+	
+	// Build item_codes from order_items
+
+
+	// Build item_quantities from order_quantities
+	char* token; // Define token for strtok
+	
+	for (int i = 0; i < new_order->num_items; i++){
+		if (i == 0){ // First item, need to pass in order_quantities string to strtok
+			token = strtok(order_quantities, MENU_DELIM);
+		}
+		else if (i == new_order->num_items - 1){
+			token = strtok(NULL, MENU_DELIM);
+		}
+		else{ // Last item, string terminator is NULL
+			token = strtok(NULL, NULL);
+		}
+			
+
+		new_order->item_quantities;
+	}
+
+	// Array for item quantities =========================================================
+	// int item_quantities[num_items]; // Static array containing item quantities
+	// int counter = 0; // Used to index through item_quantities
+
+	// // Separate quantities by MENU_DELIM and add them one-by-one to item_quantities array
+	// char* token = strtok(quantities, MENU_DELIM);
+	// char* item_quantity = strdup(token);
+	// while (item_quantity != NULL){
+	// 	item_quantities[counter] = atoi(item_quantity); // atoi converts ASCII to int
+	// 	counter++;
+	// 	token = strtok(NULL, MENU_DELIM);
+	// }
+	
+	
 }
 
 
