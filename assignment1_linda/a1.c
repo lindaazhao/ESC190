@@ -7,7 +7,7 @@
 Menu* load_menu(char* fname){
 	
 	// Create new menu struct
-	struct Menu* menu = (struct Menu*)malloc(sizeof(struct Menu));
+	Menu* menu = (Menu*)malloc(sizeof(Menu));
 	menu->num_items = 0;
 
 	// Initialize arrays for menu items
@@ -62,14 +62,14 @@ Menu* load_menu(char* fname){
 
 
 Restaurant* initialize_restaurant(char* name){
-	struct Restaurant* restaurant = (struct Restaurant*)malloc(sizeof(struct Restaurant));
+	Restaurant* restaurant = (Restaurant*)malloc(sizeof(Restaurant));
 	restaurant->name = name;
 	restaurant->menu = load_menu(MENU_FNAME);
 	restaurant->num_completed_orders = 0;
 	restaurant->num_pending_orders = 0;
 	
 	// Create empty pending_orders queue
-	struct Queue* pending_orders = (struct Queue*)malloc(sizeof(struct Queue));
+	Queue* pending_orders = (Queue*)malloc(sizeof(Queue));
 	pending_orders->head = NULL;
 	pending_orders->tail = NULL;
 	
@@ -80,57 +80,91 @@ Restaurant* initialize_restaurant(char* name){
 
 Order* build_order(char* items, char* quantities){
 
-	char* order_items = strdup(items); // Convert string literal to byte string w/allocated memory
-	char* order_quantities = strdup(quantities);
+	char* order_items = strdup(items); // Convert string literal to byte string w/malloc'd memory
+	char* order_quantities = strdup(quantities); // Remember to free these!!!
+
+	printf("order_items: %s\n", order_items);
+	printf("order_quantities: %s\n", order_quantities);
 
 	// Create new_order, pointer to an Order struct
-	struct Order* new_order = (struct Order*)malloc(sizeof(struct Order));
+	Order* new_order = malloc(sizeof(Order));
 	new_order->num_items = strlen(items) / (ITEM_CODE_LENGTH-1);
 	new_order->item_codes = (char**)malloc(sizeof(char*) * (new_order->num_items));
 	new_order->item_quantities = (int*)malloc(sizeof(int) * (new_order->num_items));
 	
-	// Build item_codes from order_items
+	printf("new_order->num_items: %d\n", new_order->num_items);
 
+	// Build item_codes from order_items
+	int item_code_index;
+	char* code = NULL;
+	char* item_code;
+
+	// Update num_order->item_codes for each item
+	for (int j = 0; j < new_order->num_items; j++){
+		code = (char*)malloc(sizeof(char) * ITEM_CODE_LENGTH);
+		item_code_index = j * (ITEM_CODE_LENGTH-1);
+		
+		memcpy(code, (order_items+item_code_index), ITEM_CODE_LENGTH-1);
+		item_code = strdup(code);
+		
+		new_order->item_codes[j] = item_code;
+		free(code);
+	}
 
 	// Build item_quantities from order_quantities
 	char* token; // Define token for strtok
+	char* order_quantity; // To duplicate token
 	
+	// // Get each item's order_quantity, one by one using for loop and strtok (to separate by MENU_DELIM)
 	for (int i = 0; i < new_order->num_items; i++){
 		if (i == 0){ // First item, need to pass in order_quantities string to strtok
 			token = strtok(order_quantities, MENU_DELIM);
+			printf("token: %s", token);
 		}
-		else if (i == new_order->num_items - 1){
+		else if (i < new_order->num_items - 1){
 			token = strtok(NULL, MENU_DELIM);
 		}
-		else{ // Last item, string terminator is NULL
-			token = strtok(NULL, NULL);
+		else { // Last item, order_quantities terminator is NULL
+			token = strtok(NULL, "\0");
 		}
-			
-
-		new_order->item_quantities;
+		order_quantity = strdup(token);
+		int order_quant = atoi(order_quantity);
+		new_order->item_quantities[i] = order_quant;
+		free(order_quantity);
 	}
-
-	// Array for item quantities =========================================================
-	// int item_quantities[num_items]; // Static array containing item quantities
-	// int counter = 0; // Used to index through item_quantities
-
-	// // Separate quantities by MENU_DELIM and add them one-by-one to item_quantities array
-	// char* token = strtok(quantities, MENU_DELIM);
-	// char* item_quantity = strdup(token);
-	// while (item_quantity != NULL){
-	// 	item_quantities[counter] = atoi(item_quantity); // atoi converts ASCII to int
-	// 	counter++;
-	// 	token = strtok(NULL, MENU_DELIM);
-	// }
-	
-	
+	free(order_items);
+	free(order_quantities);
+		
+	return new_order;
 }
 
 
 
 void enqueue_order(Order* order, Restaurant* restaurant){
+	Queue* queue = restaurant->pending_orders;
 
+	if (queue->head == NULL) { // Check if queue is empty
+		QueueNode* new_node = malloc(sizeof(QueueNode));
+		queue->head = new_node;
+		queue->tail = new_node;
+
+		new_node->order = order;
+		new_node->next = NULL;
+	}
+
+	else { // Queue is not empty
+		QueueNode* curr_node = queue->head;
+
+		while (curr_node->next != NULL) {
+			curr_node = curr_node->next;
+		}
+
+
+
+
+	}
 }
+
 Order* dequeue_order(Restaurant* restaurant){
 
 }
@@ -162,8 +196,16 @@ int get_num_pending_orders(Restaurant* restaurant){
 	Closing down and deallocating memory
 */
 void clear_order(Order** order){
-
+	for (int i = 0; i < (*order)->num_items; i++){
+			free((*order)->item_codes[i]);
+		}
+		free((*order)->item_codes);
+		free((*order)->item_quantities);
+		free(*order);
 }
+
+
+
 void clear_menu(Menu** menu){
 
 	for (int i = 0; i < (*menu)->num_items; i++){
