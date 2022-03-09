@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 Menu* load_menu(char* fname){
-	
 	// Create new menu struct
 	Menu* menu = (Menu*)malloc(sizeof(Menu));
 	menu->num_items = 0;
@@ -62,14 +62,14 @@ Menu* load_menu(char* fname){
 
 
 Restaurant* initialize_restaurant(char* name){
-	Restaurant* restaurant = (Restaurant*)malloc(sizeof(Restaurant));
+	Restaurant* restaurant = malloc(sizeof(Restaurant));
 	restaurant->name = name;
 	restaurant->menu = load_menu(MENU_FNAME);
 	restaurant->num_completed_orders = 0;
 	restaurant->num_pending_orders = 0;
 	
 	// Create empty pending_orders queue
-	Queue* pending_orders = (Queue*)malloc(sizeof(Queue));
+	Queue* pending_orders = malloc(sizeof(Queue));
 	pending_orders->head = NULL;
 	pending_orders->tail = NULL;
 	
@@ -78,21 +78,16 @@ Restaurant* initialize_restaurant(char* name){
 	return restaurant;
 }
 
-Order* build_order(char* items, char* quantities){
 
+Order* build_order(char* items, char* quantities){
 	char* order_items = strdup(items); // Convert string literal to byte string w/malloc'd memory
 	char* order_quantities = strdup(quantities); // Remember to free these!!!
-
-	printf("order_items: %s\n", order_items);
-	printf("order_quantities: %s\n", order_quantities);
 
 	// Create new_order, pointer to an Order struct
 	Order* new_order = malloc(sizeof(Order));
 	new_order->num_items = strlen(items) / (ITEM_CODE_LENGTH-1);
 	new_order->item_codes = (char**)malloc(sizeof(char*) * (new_order->num_items));
 	new_order->item_quantities = (int*)malloc(sizeof(int) * (new_order->num_items));
-	
-	printf("new_order->num_items: %d\n", new_order->num_items);
 
 	// Build item_codes from order_items
 	int item_code_index;
@@ -119,16 +114,16 @@ Order* build_order(char* items, char* quantities){
 	for (int i = 0; i < new_order->num_items; i++){
 		if (i == 0){ // First item, need to pass in order_quantities string to strtok
 			token = strtok(order_quantities, MENU_DELIM);
-			printf("token: %s", token);
+			// printf("token: %s", token);
 		}
 		else if (i < new_order->num_items - 1){
 			token = strtok(NULL, MENU_DELIM);
 		}
-		else { // Last item, order_quantities terminator is NULL
+		else { // Last item, order_quantities terminator is null character
 			token = strtok(NULL, "\0");
 		}
 		order_quantity = strdup(token);
-		int order_quant = atoi(order_quantity);
+		int order_quant = atoi(order_quantity); // Convert string to integer
 		new_order->item_quantities[i] = order_quant;
 		free(order_quantity);
 	}
@@ -139,58 +134,84 @@ Order* build_order(char* items, char* quantities){
 }
 
 
-
 void enqueue_order(Order* order, Restaurant* restaurant){
 	Queue* queue = restaurant->pending_orders;
+	// Do we have to check if order is not NULL?
+	QueueNode* new_node = malloc(sizeof(QueueNode));
 
 	if (queue->head == NULL) { // Check if queue is empty
-		QueueNode* new_node = malloc(sizeof(QueueNode));
 		queue->head = new_node;
 		queue->tail = new_node;
-
-		new_node->order = order;
-		new_node->next = NULL;
 	}
-
 	else { // Queue is not empty
-		QueueNode* curr_node = queue->head;
-
-		while (curr_node->next != NULL) {
-			curr_node = curr_node->next;
-		}
-
-
-
-
+		queue->tail->next = new_node;
+		queue->tail = new_node;
 	}
+
+	new_node->order = order;
+	new_node->next = NULL;
+
+	(restaurant->num_pending_orders)++; // Increment pending_orders
 }
+
 
 Order* dequeue_order(Restaurant* restaurant){
+	Queue* queue = restaurant->pending_orders;
+	Order* order = queue->head->order; // Order to dequeue, assuming queue is not empty
+		 
+	if (queue->head->next == NULL) { // Check if queue only has one item
+		QueueNode* temp_node = queue->head; // Save current queue head
+		queue->head = NULL; // Move head to next QueueNode
+		queue->tail = NULL; 
+		free(temp_node); // Free dequeue'd order head
+	}
 
+	else { // If queue has >1 item
+		QueueNode* temp_node = queue->head; // Save current queue head
+		queue->head = queue->head->next; // Move head to next QueueNode
+		free(temp_node); // Free dequeue'd order head
+	}
+	
+	return order;
 }
+
 
 /*
 	Getting information about our orders and order status
 */
 double get_item_cost(char* item_code, Menu* menu){
-
+	for (int i = 0; i<menu->num_items; i++){
+		if (menu->item_codes[i] == item_code){
+			return menu->item_cost_per_unit[i];
+		}
+	}
 }
 
 double get_order_subtotal(Order* order, Menu* menu){
+	double item_cost = 0.00;
+	double subtotal = 0.00;
+	
+	for (int i = 0; i < order->num_items; i++){
+		item_cost = get_item_cost(order->item_codes[i], menu);
+		subtotal += item_cost * order->item_quantities[i];
+	}
 
+	return subtotal;
 }
 
 double get_order_total(Order* order, Menu* menu){
-
+	double subtotal = get_order_subtotal(order, menu);
+	return subtotal * (TAX_RATE / 100);
 }
 
 int get_num_completed_orders(Restaurant* restaurant){
-
+	return restaurant->num_completed_orders;
 }
 
 int get_num_pending_orders(Restaurant* restaurant){
-
+	return restaurant->num_pending_orders;
 }
+
 
 /*
 	Closing down and deallocating memory
@@ -203,7 +224,6 @@ void clear_order(Order** order){
 		free((*order)->item_quantities);
 		free(*order);
 }
-
 
 
 void clear_menu(Menu** menu){
@@ -220,14 +240,30 @@ void clear_menu(Menu** menu){
 }
 
 void close_restaurant(Restaurant** restaurant){
+	QueueNode* curr_node = NULL;
+	QueueNode* temp_node = NULL;
 
+	// // Free Orders
+	if ((*restaurant)->pending_orders->head){ // Check that queue is not empty
+		curr_node = (*restaurant)->pending_orders->head; // First QueueNode
+		
+		while (curr_node != NULL) { // Iterate through all QueueNodes
+			clear_order(&(curr_node->order));
+			temp_node = curr_node->next;
+			free(curr_node);
+			curr_node = temp_node->next;
+		}
+	}
+	free((*restaurant)->pending_orders); // Free Queue
+	clear_menu(&((*restaurant)->menu));
+	free(*restaurant);
+	*restaurant = NULL;
 }
 
 
-// Helper functions
-// ================================================================================================
-
-
+/*
+	Helper Functions
+*/
 void print_menu(Menu* menu){
 	fprintf(stdout, "--- Menu ---\n");
 	for (int i = 0; i < menu->num_items; i++){
