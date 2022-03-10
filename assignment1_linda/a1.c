@@ -1,6 +1,6 @@
 #include "a1.h"
 
-// remove these after
+// REMOVE THESE BEFORE SUBMISSION
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -100,6 +100,7 @@ Order* build_order(char* items, char* quantities){
 		item_code_index = j * (ITEM_CODE_LENGTH-1);
 		
 		memcpy(code, (order_items+item_code_index), ITEM_CODE_LENGTH-1);
+		code[ITEM_CODE_LENGTH-1] = '\0';
 		item_code = strdup(code);
 		
 		new_order->item_codes[j] = item_code;
@@ -179,12 +180,14 @@ Order* dequeue_order(Restaurant* restaurant){
 /*
 	Getting information about our orders and order status
 */
-double get_item_cost(char* item_code, Menu* menu){
-	for (int i = 0; i<menu->num_items; i++){
-		if (menu->item_codes[i] == item_code){
+double get_item_cost(char* item_code, Menu* menu){	
+	for (int i = 0; i<(menu->num_items); i++){
+		if (strcmp(menu->item_codes[i], item_code) == 0){
 			return menu->item_cost_per_unit[i];
 		}
 	}
+
+	return 0.00;
 }
 
 double get_order_subtotal(Order* order, Menu* menu){
