@@ -6,6 +6,9 @@
 
 
 Menu* load_menu(char* fname){
+	// *** Trim whitespace before and after menu items ***
+	
+	
 	// Create new menu struct
 	Menu* menu = (Menu*)malloc(sizeof(Menu));
 	menu->num_items = 0;
@@ -173,6 +176,9 @@ Order* dequeue_order(Restaurant* restaurant){
 		free(temp_node); // Free dequeue'd order head
 	}
 	
+	(restaurant->num_pending_orders)--;
+	(restaurant->num_completed_orders)++;
+
 	return order;
 }
 
@@ -198,13 +204,15 @@ double get_order_subtotal(Order* order, Menu* menu){
 		item_cost = get_item_cost(order->item_codes[i], menu);
 		subtotal += item_cost * order->item_quantities[i];
 	}
-
 	return subtotal;
 }
 
 double get_order_total(Order* order, Menu* menu){
-	double subtotal = get_order_subtotal(order, menu);
-	return subtotal * (TAX_RATE / 100);
+	double tax_rate = TAX_RATE; // TAX_RATE is a double for float division
+	double order_subtotal = get_order_subtotal(order, menu);
+	double order_total = order_subtotal * (1 + (tax_rate/100.0));
+
+	return order_total;
 }
 
 int get_num_completed_orders(Restaurant* restaurant){
@@ -242,6 +250,7 @@ void clear_menu(Menu** menu){
 
 }
 
+// Seg fault, fine when there are no orders in the queue
 void close_restaurant(Restaurant** restaurant){
 	QueueNode* curr_node = NULL;
 	QueueNode* temp_node = NULL;
