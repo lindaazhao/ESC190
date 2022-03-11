@@ -1,14 +1,8 @@
 #include "a1.h"
 
-// REMOVE THESE BEFORE SUBMISSION
-#include <stdio.h>
-#include <stdlib.h>
+int isspace(int argument);
 
-
-Menu* load_menu(char* fname){
-	// *** Trim whitespace before and after menu items ***
-	
-	
+Menu* load_menu(char* fname){	
 	// Create new menu struct
 	Menu* menu = (Menu*)malloc(sizeof(Menu));
 	menu->num_items = 0;
@@ -30,6 +24,13 @@ Menu* load_menu(char* fname){
 		// Split line into item code, item name, and item price
 		char* token = strtok(line, MENU_DELIM);
 		char* item_code = strdup(token); // Remember to free these, since they are allocated using malloc
+		char* item_code_it = item_code; // Refers to an index in an array
+
+		while (isspace((unsigned char)*item_code_it)){
+			item_code_it++;
+		}
+		
+		char *item_code_trim = strndup(item_code_it, ITEM_CODE_LENGTH); // this now becomes an array
 		
 		token = strtok(NULL, MENU_DELIM);
 		char* item_name = strdup(token); // Remember to free these, since they are allocated using malloc
@@ -50,11 +51,12 @@ Menu* load_menu(char* fname){
 		}
 
 		// Update menu with the new item
-		menu->item_codes[menu->num_items-1] = item_code;
+		menu->item_codes[menu->num_items-1] = item_code_trim;
 		menu->item_names[menu->num_items-1] = item_name;
-		menu->item_cost_per_unit[menu->num_items-1] = item_price;	
+		menu->item_cost_per_unit[menu->num_items-1] = item_price;
 		
 		free(item_price_str); // Free the pointer that isn't used in the menu
+		free(item_code);
 	}
 	
 	free(line);
@@ -104,8 +106,8 @@ Order* build_order(char* items, char* quantities){
 		
 		memcpy(code, (order_items+item_code_index), ITEM_CODE_LENGTH-1);
 		code[ITEM_CODE_LENGTH-1] = '\0';
-		item_code = strdup(code);
 		
+		item_code = strdup(code);
 		new_order->item_codes[j] = item_code;
 		free(code);
 	}
@@ -118,7 +120,6 @@ Order* build_order(char* items, char* quantities){
 	for (int i = 0; i < new_order->num_items; i++){
 		if (i == 0){ // First item, need to pass in order_quantities string to strtok
 			token = strtok(order_quantities, MENU_DELIM);
-			// printf("token: %s", token);
 		}
 		else if (i < new_order->num_items - 1){
 			token = strtok(NULL, MENU_DELIM);
@@ -131,6 +132,7 @@ Order* build_order(char* items, char* quantities){
 		new_order->item_quantities[i] = order_quant;
 		free(order_quantity);
 	}
+	
 	free(order_items);
 	free(order_quantities);
 		
@@ -140,7 +142,6 @@ Order* build_order(char* items, char* quantities){
 
 void enqueue_order(Order* order, Restaurant* restaurant){
 	Queue* queue = restaurant->pending_orders;
-	// Do we have to check if order is not NULL?
 	QueueNode* new_node = malloc(sizeof(QueueNode));
 
 	if (queue->head == NULL) { // Check if queue is empty
@@ -175,11 +176,11 @@ Order* dequeue_order(Restaurant* restaurant){
 		queue->head = queue->head->next; // Move head to next QueueNode
 		free(temp_node); // Free dequeue'd order head
 	}
-	
+
 	(restaurant->num_pending_orders)--;
 	(restaurant->num_completed_orders)++;
 
-	return order;
+	return order;	
 }
 
 
@@ -192,9 +193,8 @@ double get_item_cost(char* item_code, Menu* menu){
 			return menu->item_cost_per_unit[i];
 		}
 	}
-
-	return 0.00;
 }
+
 
 double get_order_subtotal(Order* order, Menu* menu){
 	double item_cost = 0.00;
@@ -207,6 +207,7 @@ double get_order_subtotal(Order* order, Menu* menu){
 	return subtotal;
 }
 
+
 double get_order_total(Order* order, Menu* menu){
 	double tax_rate = TAX_RATE; // TAX_RATE is a double for float division
 	double order_subtotal = get_order_subtotal(order, menu);
@@ -215,9 +216,11 @@ double get_order_total(Order* order, Menu* menu){
 	return order_total;
 }
 
+
 int get_num_completed_orders(Restaurant* restaurant){
 	return restaurant->num_completed_orders;
 }
+
 
 int get_num_pending_orders(Restaurant* restaurant){
 	return restaurant->num_pending_orders;
@@ -238,7 +241,6 @@ void clear_order(Order** order){
 
 
 void clear_menu(Menu** menu){
-
 	for (int i = 0; i < (*menu)->num_items; i++){
 		free((*menu)->item_codes[i]);
 		free((*menu)->item_names[i]);
@@ -250,22 +252,19 @@ void clear_menu(Menu** menu){
 
 }
 
-// Seg fault, fine when there are no orders in the queue
-void close_restaurant(Restaurant** restaurant){
-	QueueNode* curr_node = NULL;
-	QueueNode* temp_node = NULL;
 
-	// // Free Orders
-	if ((*restaurant)->pending_orders->head){ // Check that queue is not empty
-		curr_node = (*restaurant)->pending_orders->head; // First QueueNode
-		
-		while (curr_node != NULL) { // Iterate through all QueueNodes
-			clear_order(&(curr_node->order));
-			temp_node = curr_node->next;
-			free(curr_node);
-			curr_node = temp_node->next;
-		}
+void close_restaurant(Restaurant** restaurant){	
+	QueueNode* curr_node = (*restaurant)->pending_orders->head;
+	QueueNode* next_node = curr_node;
+
+	// Free pending_orders Queue, each order
+	while (curr_node != NULL) {
+		clear_order(&(curr_node->order));
+		next_node = curr_node->next;
+		free(curr_node);
+		curr_node = next_node;
 	}
+
 	free((*restaurant)->pending_orders); // Free Queue
 	clear_menu(&((*restaurant)->menu));
 	free(*restaurant);
