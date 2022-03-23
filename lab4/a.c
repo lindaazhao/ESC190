@@ -15,8 +15,6 @@ int get_player_rank_helper(char player_id[], PlayerRecord* curr, int depth){
     left_rank = get_player_rank_helper(player_id, curr->left_child, depth+1);
     right_rank = get_player_rank_helper(player_id, curr->right_child, depth+1);
 
-
-
 	if (left_rank == -1){
 		return right_rank;
 	}

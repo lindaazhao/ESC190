@@ -66,16 +66,16 @@ PlayerRecord* add_match(
 
 	if (p1_wins == 13) {
 		new_record->player = p1->player;
-		new_record->game_records[WINS] = p1->game_records[WINS] + p1_wins;
-		new_record->game_records[LOSSES] = p1->game_records[LOSSES] + p2_wins;	
+		new_record->game_records[WINS] = p1_wins;
+		new_record->game_records[LOSSES] = p2_wins;	
 
 		new_record->right_child = p1;
 		new_record->left_child = p2;
 	}
 	else { // p2_wins == 13 
 		new_record->player = p2->player;
-		new_record->game_records[WINS] = p2->game_records[WINS] + p2_wins;
-		new_record->game_records[LOSSES] = p2->game_records[LOSSES] + p1_wins;		
+		new_record->game_records[WINS] = p2_wins;
+		new_record->game_records[LOSSES] = p1_wins;		
 		
 		new_record->right_child = p2;
 		new_record->left_child = p1;
