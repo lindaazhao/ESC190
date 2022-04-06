@@ -259,9 +259,14 @@ Vnode* get_next_node_to_visit(Graph* gr){
 }
 
 
-char** get_route(Graph* gr, char* dest){
+char** get_route(Graph* gr, char* dest){  
     int num_nodes = 0;
     Vnode* curr = get_station_from_edge_name(gr, dest);
+
+    if (curr->cost == 2147483647){
+        return NULL; // No path was found to the destination if the cost has not been updated
+    }
+
     while(curr){
         num_nodes++;
         curr = curr->prev;
