@@ -64,7 +64,7 @@ void update(Graph *gr, char *start, char *dest, int weight){
     Enode* curr_edge = NULL;
     Vnode* Vstart = NULL;
     
-    // Find start station and edge station in graph
+    // Find start station in graph
     for (int i = 0; i<gr->count; i++){
         if (strcmp(gr->adj_list[i]->station, start) == 0){
             // Found the starting vertex
@@ -88,8 +88,7 @@ void update(Graph *gr, char *start, char *dest, int weight){
                 break;
             }
             else if (curr_edge->next == NULL){
-                found_edge = 0; // Iterated through entire LL, did not find edge
-                break;
+                break; // Iterated through entire LL, did not find edge
             }
             else{
                 curr_edge = curr_edge->next; // Iterate to next edge
