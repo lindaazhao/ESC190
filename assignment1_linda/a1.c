@@ -20,7 +20,10 @@ Menu* load_menu(char* fname){
 	menu_file = fopen(fname, "r"); // Open menu file
 	
 	// Get each line from the menu file, one by one
-	while (getline(&line, &len, menu_file) != -1){		
+	while (getline(&line, &len, menu_file) != -1){
+		if (strlen(line) == 1){
+			continue;
+		}
 		// Split line into item code, item name, and item price
 		char* token = strtok(line, MENU_DELIM);
 		char* item_code = strdup(token); // Remember to free these, since they are allocated using malloc
