@@ -2,9 +2,9 @@
 
 int main(){
     // Task 1
-    printf("%d\n", bitwise_xor(67));
+    printf("%d\n", bitwise_xor(67)); // 16
     char *bin_string = xor_encrypt('C');
-    printf("%c\n", xor_decrypt(bin_string));
+    printf("%c\n", xor_decrypt(bin_string)); // C
     free(bin_string);
     
     // Task 2

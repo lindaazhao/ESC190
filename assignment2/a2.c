@@ -1,11 +1,23 @@
 #include "a2.h"
 
 int bitwise_xor(int value){
-    //add code here
+    int key = (int)(KEY);
+    return (key ^ value);
 }
 
 char *xor_encrypt(char c){
-    //add code here
+    char* bin_encrypt[7];
+    
+    int ascii_char = (int)(c);
+    int ascii_encrypt = bitwise_xor(ascii_char);
+
+    for (int i = 6; i >= 0; i--){
+        if (ascii_encrypt - pow(2, i) >= 0){
+            bin_encrypt[6 - i] = 1;
+            ascii_encrypt = ascii_encrypt - pow(2, i);
+        }
+    }
+    return bin_encrypt;
 }
 
 char xor_decrypt(char *s){
