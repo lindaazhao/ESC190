@@ -1,16 +1,28 @@
 #include "a2.h"
 #include <math.h>
 
+// ========================================================
+// Function Declarations
+// ========================================================
+
 char* gen_template();
 int msg_bool(int i);
+int minimum(int x, int y, int z);
+
+
+// ========================================================
+// Assignment 2 Functions
+// ========================================================
 
 int bitwise_xor(int value){
     int key = (int)(KEY);
     return (key ^ value);
 }
 
+
 char *xor_encrypt(char c){
-    char* bin_encrypt = malloc(sizeof(char) * 7);
+    char* bin_encrypt = malloc(sizeof(char) * 8);
+    bin_encrypt[7] = '\0';
     
     int ascii_char = (int)(c);
     int ascii_encrypt = bitwise_xor(ascii_char);
@@ -28,6 +40,7 @@ char *xor_encrypt(char c){
     return bin_encrypt;
 }
 
+
 char xor_decrypt(char *s){
     char decrypted;
     int ascii_char = 0;
@@ -44,6 +57,7 @@ char xor_decrypt(char *s){
     return decrypted;
 }
 
+
 char *gen_code(char *msg){
     int msg_len = strlen(msg);
     char* msg_encrypt = malloc(sizeof(char) * (msg_len + 1) * 7); // Length of encrypted message
@@ -59,13 +73,11 @@ char *gen_code(char *msg){
         }
         free(letter_encrypt);
     }
-    // printf("%d\n", strlen(msg_encrypt));
 
     // Add encrypted null char to the end
     for (int i = 0; i < 7; i++){
         msg_encrypt[msg_len * 7 + i] = null_char[i];
     }
-    // printf("msg_encrypt: %s\n", msg_encrypt);
 
     // Weave msg_encrypt into code (currently the QR code template)
     char* sc_code = gen_template();
@@ -80,13 +92,12 @@ char *gen_code(char *msg){
             sc_code[i] = '0';
         }
     }
-    // printf("code: %s\n\n", code);
     free(null_char);
     free(msg_encrypt);
-    // free(letter_encrypt);
 
     return sc_code;
 }
+
 
 char *read_code(char *code){
     // Step 1: Isolate message from SC code template
@@ -99,8 +110,6 @@ char *read_code(char *code){
             counter++;
         }
     }
-
-    // printf("msg_encrypt: %s\n\n", msg);
 
     // Step 2: Decrypt message letter by letter (7 bits at a time)
     char* decrypted = malloc(25 * sizeof(char));
@@ -117,14 +126,10 @@ char *read_code(char *code){
             break;
         }
     }
-    
-    // printf("%s\n", decrypted);
-
-    // printf("encyrypted letter: %s\n", curr_letter_encrypted);
-    
     free(msg);
     return decrypted;
 }
+
 
 char *compress(char *code){
     char* compress = malloc(sizeof(char) * 65);
@@ -134,7 +139,6 @@ char *compress(char *code){
         char* curr_bin = malloc(4 * sizeof(char));
         strncpy(curr_bin, code + (i*4), 4);
         int dec_val = 0;
-        // printf("%s\n", curr_bin);
 
         // Convert binary string to integer value
         for (int j = 0; j < 4; j++){
@@ -145,23 +149,109 @@ char *compress(char *code){
         
         char* hex = malloc(sizeof(char)*2);
         hex[1] = '\0';
-        sprintf(hex, "%x", dec_val);
+        sprintf(hex, "%X", dec_val);
         compress[i] = hex[0];
-        printf("%s", hex);
         free(hex);
         free(curr_bin); 
     }
-    printf("\n%s\n", compress);
     return compress;
 }
 
+
 char *decompress(char *code){
-    //add code here
+    int curr_dec = 0;
+    char* decompressed = malloc(sizeof(char) * 257);
+    decompressed[256] = '\0';
+
+    for (int i = 0; i < 64; i++){
+        if (code[i] == 'A'){
+            curr_dec = 10;
+        }
+        else if (code[i] == 'B'){
+            curr_dec = 11;
+        }
+        else if (code[i] == 'C'){
+            curr_dec = 12;
+        }
+        else if (code[i] == 'D'){
+            curr_dec = 13;
+        }
+        else if (code[i] == 'E'){
+            curr_dec = 14;
+        }
+        else if (code[i] == 'F'){
+            curr_dec = 15;
+        }
+        else{
+            curr_dec = (int)(code[i]) - 48;
+        }
+
+        for (int j = 3; j >= 0; j--){
+            if (curr_dec - pow(2, j) >= 0){
+                curr_dec = curr_dec - pow(2, j);
+                decompressed[4*i + (3-j)] = '1';
+            }
+            else{
+                decompressed[4*i + (3-j)] = '0';
+            }
+        }
+    }
+    return(decompressed);
 }
 
+
 int calc_ld(char *sandy, char *cima){
-    //add code here
+    int row = 0;
+    int col = 0;
+    int sandy_len = strlen(sandy);
+    int cima_len = strlen(cima);
+
+    // Initialize matrix (array) to keep track of LD of all substring combinations
+    int arr[sandy_len + 1][cima_len + 1];
+    arr[0][0] = 0;
+
+    // Number in [row][col] is the minimum number of operations required to get the 
+    // column string (char* sandy, [0:row]) to the row string (char* cima, [0:col]).
+
+    // Left-most column is number of deletions (0 to sandy_len) starting from empty string
+    for (row = 0; row < sandy_len; row++){
+        arr[row + 1][0] = arr[row][0] + 1;
+    }
+    // Top-most row is number of insertions (0 to cima_len) to generate empty string
+    for (col = 0; col < cima_len; col++){
+        arr[0][col + 1] = arr[0][col] + 1;
+    }
+    // Rest of the matrix: [row][col] is equal to 1 + min{[row-1][col], [row][col-1], [row-1][col-1]}
+    for (row = 0; row < sandy_len; row++){
+        for (col = 0; col < cima_len; col++){
+            if (sandy[row] == cima[col]){
+                arr[row+1][col+1] = arr[row][col];
+            }
+            else{
+                arr[row+1][col+1] = 1 + minimum(arr[row][col+1], arr[row+1][col], arr[row][col]);
+            }
+        }
+    }
+    return arr[sandy_len][cima_len];
 }
+
+
+// ========================================================
+// Helper Functions
+// ========================================================
+
+int minimum(int x, int y, int z){
+    if (x <= y && x <= z){
+        return x;
+    }
+    else if (y <= x && y <= z){
+        return y;
+    }
+    else if (z <= x && z <= y){
+        return z;
+    }
+}
+
 
 int msg_bool(int i){
     if ((4 < i && i < 11) || (20 < i && i < 27) || (36 < i && i < 43) || (52 < i && i < 59) || (68 < i && i < 75) || (79 < i && i < 176) || (180 < i && i < 192) || (196 < i && i < 208) || (212 < i && i < 224) || (228 < i && i < 240) || (245 < i && i < 255)){
@@ -175,12 +265,6 @@ int msg_bool(int i){
 
 char* gen_template(){
     char* sc_template = calloc(257, sizeof(char));
-    // char* sc_template = malloc(sizeof(char) * 256);
-    
-    // for (int i = 0; i < 256; i++){
-    //     // Initialize everything to '2' char, useful for weaving in msg later
-    //     sc_template[i] = '2'; 
-    // }
 
     // Set up the template properly
     // Row 1
