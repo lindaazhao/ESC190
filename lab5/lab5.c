@@ -267,7 +267,7 @@ char** get_route(Graph* gr, char* dest){
         return NULL; // No path was found to the destination if the cost has not been updated
     }
 
-    while(curr){
+    while(curr){ // Count number of nodes in path first
         num_nodes++;
         curr = curr->prev;
     }
