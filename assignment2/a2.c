@@ -2,6 +2,7 @@
 #include <math.h>
 
 char* gen_template();
+int msg_bool(int i);
 
 int bitwise_xor(int value){
     int key = (int)(KEY);
@@ -44,7 +45,6 @@ char xor_decrypt(char *s){
 }
 
 char *gen_code(char *msg){
-    char* code = gen_template();
     int msg_len = strlen(msg);
     char* msg_encrypt = malloc(sizeof(char) * (msg_len + 1) * 7); // Length of encrypted message
     char* letter_encrypt;
@@ -68,40 +68,91 @@ char *gen_code(char *msg){
     // printf("msg_encrypt: %s\n", msg_encrypt);
 
     // Weave msg_encrypt into code (currently the QR code template)
+    char* sc_code = gen_template();
+    int msg_ec_len = (msg_len + 1) * 7;
+
     for (int i = 0; i<256; i++){
-        if (code[i] == '2' && counter < strlen(msg_encrypt)){
-            code[i] = msg_encrypt[counter];
+        if (sc_code[i] == 0 && counter < msg_ec_len){
+            sc_code[i] = msg_encrypt[counter];
             counter++;
         } 
-        else if (code[i] == '2'){
-            code[i] = '0';
+        else if (sc_code[i] == 0){
+            sc_code[i] = '0';
         }
     }
-    printf("code: %s\n", code);
+    // printf("code: %s\n\n", code);
     free(null_char);
     free(msg_encrypt);
     // free(letter_encrypt);
 
-    return code;
+    return sc_code;
 }
 
 char *read_code(char *code){
+    // Step 1: Isolate message from SC code template
     char* msg = malloc(180 * sizeof(char)); // 180 is the max # of chars an encoded msg can be
     int counter = 0;
 
     for (int i = 5; i < 256; i++){
-        if (4 < i < 11 || 20 < i < 27 || 36 < i < 43 || 52 < i < 59 || 68 < i < 75 || 
-        79 < i < 176 || 180 < i < 192 || 196 < i < 208 || 212 < i < 224 || 228 < i < 240
-        || 245 < i < 255){
+        if (msg_bool(i)){
             msg[counter] = code[i];
+            counter++;
         }
-
     }
-    return msg;
+
+    // printf("msg_encrypt: %s\n\n", msg);
+
+    // Step 2: Decrypt message letter by letter (7 bits at a time)
+    char* decrypted = malloc(25 * sizeof(char));
+
+    for (int i = 0; i < 26; i++){
+        char* curr_ec = malloc(7 * sizeof(char));
+        strncpy(curr_ec, msg + (i*7), 7);
+        char curr_dc = xor_decrypt(curr_ec);
+
+        decrypted[i] = curr_dc;
+        free(curr_ec);
+    
+        if (curr_dc == '\0'){
+            break;
+        }
+    }
+    
+    // printf("%s\n", decrypted);
+
+    // printf("encyrypted letter: %s\n", curr_letter_encrypted);
+    
+    free(msg);
+    return decrypted;
 }
 
 char *compress(char *code){
-    //add code here
+    char* compress = malloc(sizeof(char) * 65);
+    compress[64] = '\0';
+
+    for (int i = 0; i < 64; i++){
+        char* curr_bin = malloc(4 * sizeof(char));
+        strncpy(curr_bin, code + (i*4), 4);
+        int dec_val = 0;
+        // printf("%s\n", curr_bin);
+
+        // Convert binary string to integer value
+        for (int j = 0; j < 4; j++){
+            if (curr_bin[j] == '1'){
+                dec_val = dec_val + pow(2, 3-j);
+            }
+        }
+        
+        char* hex = malloc(sizeof(char)*2);
+        hex[1] = '\0';
+        sprintf(hex, "%x", dec_val);
+        compress[i] = hex[0];
+        printf("%s", hex);
+        free(hex);
+        free(curr_bin); 
+    }
+    printf("\n%s\n", compress);
+    return compress;
 }
 
 char *decompress(char *code){
@@ -112,14 +163,24 @@ int calc_ld(char *sandy, char *cima){
     //add code here
 }
 
+int msg_bool(int i){
+    if ((4 < i && i < 11) || (20 < i && i < 27) || (36 < i && i < 43) || (52 < i && i < 59) || (68 < i && i < 75) || (79 < i && i < 176) || (180 < i && i < 192) || (196 < i && i < 208) || (212 < i && i < 224) || (228 < i && i < 240) || (245 < i && i < 255)){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 
 char* gen_template(){
-    char* sc_template = malloc(256 * sizeof(char));
+    char* sc_template = calloc(257, sizeof(char));
+    // char* sc_template = malloc(sizeof(char) * 256);
     
-    for (int i = 0; i<256; i++){
-        // Initialize everything to '2' char, useful for weaving in msg later
-        sc_template[i] = '2'; 
-    }
+    // for (int i = 0; i < 256; i++){
+    //     // Initialize everything to '2' char, useful for weaving in msg later
+    //     sc_template[i] = '2'; 
+    // }
 
     // Set up the template properly
     // Row 1
@@ -223,6 +284,7 @@ char* gen_template(){
     sc_template[244] = '1';
 
     sc_template[255] = '1';
+    sc_template[256] = '\0';
     
     return sc_template;
 }
